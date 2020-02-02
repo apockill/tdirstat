@@ -4,24 +4,21 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='alex-tools',
-    version='0.1.0',
-    description="A random set of commandline tools for my personal use",
+    version='1.0.0',
+    description="Terminal-based directory statistics with a nice TUI and quick"
+                " actionable information",
     packages=find_namespace_packages(
-        include=["tools*"]
+        include=["tdirstat*"]
     ),
     author="Alex Thiel",
     scripts=[],
     entry_points={
         "console_scripts": {
-            "axls=tools:ls",
-            "axexplore=tools:file_explorer",
-            "tdirstat=tools.tdirstat:tdirstat"
+            "tdirstat=tdirstat:tdirstat"
         }
     },
     install_requires=[
         "asciimatics==1.11.0"
     ],
-
     extras_require={}
-
 )
