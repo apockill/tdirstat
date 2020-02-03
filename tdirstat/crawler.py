@@ -149,8 +149,7 @@ class DirectoryStat(NodeStat):
                             child_files.append(NodeStat(path=entry))
 
                 except (PermissionError, FileNotFoundError) as e:
-                    logging.warning(
-                        f"Error scanning file {entry.path}: {type(e)}")
+                    pass
                 except Exception as e:
                     logging.critical("Unexpected error scanning file "
                                      f"{entry.path}: {type(e)} {e}")
@@ -167,7 +166,7 @@ class DirectoryStat(NodeStat):
 
             return child_directories, child_files
         except Exception as e:
-            print(e, type(e))
+            logging.critical(f"Error: {e} {type(e)}")
 
     def add_items(self, changed_dirstat: 'DirectoryStat'):
         """Children nodes call this on parent methods so that parents can
