@@ -3,7 +3,7 @@
 from setuptools import setup, find_namespace_packages
 
 setup(
-    name='alex-tools',
+    name='tdirstat',
     version='1.0.0',
     description="Terminal-based directory statistics with a nice TUI and quick"
                 " actionable information",
