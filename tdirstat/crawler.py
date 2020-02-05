@@ -128,7 +128,7 @@ class DirectoryStat(NodeStat):
         try:
             try:
                 entries = os.scandir(self._path)
-            except (PermissionError, FileNotFoundError):
+            except (PermissionError, FileNotFoundError, OSError):
                 entries = []
 
             child_directories = []
@@ -148,7 +148,7 @@ class DirectoryStat(NodeStat):
                         else:
                             child_files.append(NodeStat(path=entry))
 
-                except (PermissionError, FileNotFoundError) as e:
+                except (PermissionError, FileNotFoundError, OSError) as e:
                     pass
                 except Exception as e:
                     logging.critical("Unexpected error scanning file "
