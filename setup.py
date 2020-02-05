@@ -20,7 +20,8 @@ setup(
     install_requires=[
         "asciimatics==1.11.0"
     ],
-    download_url="https://github.com/apockill/tdirstat",
+    url="https://github.com/apockill/tdirstat",
+    download_url="https://github.com/apockill/tdirstat/archive/v1.0.0.tar.gz",
     python_requires='>=3.6',
     extras_require={},
     classifiers=[
