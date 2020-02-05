@@ -240,24 +240,3 @@ class DirectoryStat(NodeStat):
                 (self.finished.is_set() or total_items_changed > 0):
             self._on_stats_change(total_items_changed, total_size_changed,
                                   finished)
-
-
-if __name__ == "__main__":
-    from time import time, sleep
-
-    start = time()
-    for i in range(5):
-        dirstat = DirectoryStat("/", mounts_to_ignore=get_mounts())
-        dirstat.finished.wait()
-        print(dirstat)
-    print("Time", (time() - start) / 5)
-    """
-    With mounts:
-    9.8, 9.97
-    
-    With mount, checking symlink only if it's a directory:
-    10.59, 10.85
-    
-    Without mount:
-    7.18, 7.949, 8.01
-    """
