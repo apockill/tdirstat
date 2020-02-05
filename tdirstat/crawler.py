@@ -239,7 +239,7 @@ class DirectoryStat(NodeStat):
         if self._on_stats_change is not None and \
                 (self.finished.is_set() or total_items_changed > 0):
             self._on_stats_change(total_items_changed, total_size_changed,
-                                  self.finished.set())
+                                  finished)
 
 
 if __name__ == "__main__":

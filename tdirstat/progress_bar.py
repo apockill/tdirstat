@@ -1,3 +1,6 @@
+from time import time
+
+
 def generate_progress_bar(curr, max, n_characters):
     """Returns an ascii progress bar"""
     phases = (' ', '▏', '▎', '▍', '▌', '▋', '▊', '▉', '█')
@@ -17,3 +20,13 @@ def generate_progress_bar(curr, max, n_characters):
         progress_bar += phase
 
     return progress_bar
+
+
+def spinner(delay_seconds):
+    """A generator that returns a cursor value, time based"""
+    phases = ['|', '/', '-', '\\']
+    while True:
+        for phase in phases:
+            last_phase = time()
+            while time() - last_phase < delay_seconds:
+                yield phase

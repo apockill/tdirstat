@@ -14,7 +14,9 @@ from asciimatics.screen import Screen
 from asciimatics.exceptions import StopApplication
 
 from .crawler import DirectoryStat, NodeStat
-from .progress_bar import generate_progress_bar
+from .progress_bar import generate_progress_bar, spinner
+
+spinner = spinner(delay_seconds=0.3)
 
 
 class TDirStatView(Frame):
@@ -71,10 +73,11 @@ class TDirStatView(Frame):
              str(round(self.dirstat.total_items, 2))],
             self.dirstat.parent)
         ]
-
+        spin = next(spinner) + ' '
         for dirstat in dirstats:
+            pathname = dirstat.path.name
             columns = [
-                f"{dirstat.path.name}/",
+                f"{spin if not dirstat.finished.is_set() else ''}{pathname}/",
                 generate_progress_bar(dirstat.total_size,
                                       self.dirstat.total_size, 15),
                 str(dirstat.total_size_pretty),
