@@ -16,7 +16,7 @@ from asciimatics.exceptions import StopApplication
 from .crawler import DirectoryStat, NodeStat
 from .progress_bar import generate_progress_bar, spinner
 
-spinner = spinner(delay_seconds=0.3)
+spinner = spinner(delay_seconds=0.25)
 
 
 class TDirStatView(Frame):
