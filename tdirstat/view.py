@@ -8,10 +8,11 @@ from asciimatics.widgets import (
     Text,
     Divider)
 from asciimatics.screen import Screen
-from asciimatics.exceptions import  StopApplication
+from asciimatics.exceptions import StopApplication
 
 from .crawler import DirectoryStat
 from .progress_bar import generate_progress_bar
+
 
 class TDirStatView(Frame):
     def __init__(self, screen, dirstat: DirectoryStat):
