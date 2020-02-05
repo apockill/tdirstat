@@ -22,11 +22,14 @@ def main():
 
     def demo(screen: Screen, old_scene):
         nonlocal dirstat
+        on_stats_change = lambda *args, **kwargs: screen.force_update()
         if dirstat is None:
             dirstat = DirectoryStat(
                 path=str(args.root_dir.absolute()),
-                on_stats_change=lambda *args, **kwargs: screen.force_update(),
+                on_stats_change=on_stats_change,
                 mounts_to_ignore=get_mounts())
+        # Make sure this gets set each time the screen resizes
+        dirstat._on_stats_change = on_stats_change
         screen.play(
             [Scene([TDirStatView(screen, dirstat)], duration=-1)],
 
