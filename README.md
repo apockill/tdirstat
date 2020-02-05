@@ -9,7 +9,7 @@ to complete.
 Contributions welcome!
 
 ## Installation
-```pip install tdirstat@git+https://github.com/apockill/tdirstat```
+```pip install --user setuptools tdirstat@git+https://github.com/apockill/tdirstat```
 
 Then, to run:
 ```tdirstat /```
