@@ -14,7 +14,7 @@ _work_queue: Queue = Queue()
 def _worker():
     while True:
         work_fn, output_queue = _work_queue.get(block=True)
-        out = work_fn()
+        out: DirectoryStat._get_children = work_fn()
         output_queue.put(out)
 
 
@@ -22,6 +22,15 @@ def _submit_work(func) -> Queue:
     output_queue = Queue()
     _work_queue.put((func, output_queue))
     return output_queue
+
+
+def get_mounts():
+    try:
+        with open('/proc/mounts', 'r', encoding="utf-8") as f:
+            return [line.split()[1].replace("\\040", " ")
+                    for line in f.readlines()]
+    except FileNotFoundError:
+        return None
 
 
 def fmt_bytes(size_bytes):
@@ -73,14 +82,27 @@ class DirectoryStat(NodeStat):
 
     def __init__(self,
                  path: Union[str, os.DirEntry],
+                 mounts_to_ignore: Optional[List] = None,
                  executor: Optional[Thread] = None,
                  on_stats_change=None,
                  parent: 'DirectoryStat' = None):
+        """
+        :param path:
+        :param executor:
+        :param on_stats_change:
+        :param parent:
+        :param ignore_mounts:
+        Directories in the list will be ignored and
+        all other directories will be assumed to not be mounts.
+
+        If set to 'None', then directories will be checked individually to see
+        if they are mounts.
+        """
         super().__init__(path=path)
         self.finished: Event = Event()
         self.parent = parent
         self._on_stats_change = on_stats_change
-
+        self.mounts_to_ignore = mounts_to_ignore
         # Statistics
         """This is turned true when all children have finished scanning"""
         self.total_items = 0
@@ -126,6 +148,7 @@ class DirectoryStat(NodeStat):
 
     def _get_children(self):
         try:
+
             try:
                 entries = os.scandir(self._path)
             except (PermissionError, FileNotFoundError, OSError):
@@ -137,13 +160,17 @@ class DirectoryStat(NodeStat):
             for entry in entries:
                 try:
                     self.total_items += 1
+                    if entry.path in self.mounts_to_ignore:
+                        continue
+
                     if not entry.is_symlink():
-                        if entry.is_dir() and not os.path.ismount(entry):
+                        if entry.is_dir():
                             dirstat = DirectoryStat(
                                 path=entry,
                                 executor=self.worker_thread,
                                 parent=self,
-                                on_stats_change=self.add_items)
+                                on_stats_change=self.add_items,
+                                mounts_to_ignore=self.mounts_to_ignore)
                             child_directories.append(dirstat)
                         else:
                             child_files.append(NodeStat(path=entry))
@@ -174,17 +201,37 @@ class DirectoryStat(NodeStat):
 
         self.total_items += changed_dirstat.total_items
         self.total_size += changed_dirstat.total_size
-        assert not self.finished.is_set(), \
-            "How can a child update a parent if the parent has already been" \
-            "marked as 'finished'?"
 
+        finished = False
         # Check if this node is ready to be 'finished' as well
         if (changed_dirstat.finished.is_set()
                 and all(dir.finished.is_set() for dir in self.directories)):
             self.finished.set()
+            finished = True
 
-        if self._on_stats_change is not None:
-            # Optimization: Make sure there re changes that actually need to be
-            # passed up the chain
-            if changed_dirstat.total_items > 0 or self.finished.is_set():
-                self._on_stats_change(changed_dirstat)
+        # Optimization: Make sure there are changes that actually need to be
+        # passed up the chain
+        if self._on_stats_change is not None and \
+                (finished or changed_dirstat.total_items > 0):
+            self._on_stats_change(changed_dirstat)
+
+
+if __name__ == "__main__":
+    from time import time, sleep
+
+    start = time()
+    for i in range(5):
+        dirstat = DirectoryStat("/", mounts_to_ignore=get_mounts())
+        dirstat.finished.wait()
+        print(dirstat)
+    print("Time", (time() - start) / 5)
+    """
+    With mounts:
+    9.8, 9.97
+    
+    With mount, checking symlink only if it's a directory:
+    10.59, 10.85
+    
+    Without mount:
+    7.18, 7.949, 8.01
+    """
