@@ -9,10 +9,15 @@ to complete.
 Contributions welcome!
 
 ## Installation
-```pip install --user setuptools tdirstat@git+https://github.com/apockill/tdirstat```
+```commandline
+pip install --user setuptools tdirstat@git+https://github.com/apockill/tdirstat
+```
 
 Then, to run:
-```tdirstat /```
+```commandline
+tdirstat /
+```
+
 The first argument is the directory you wish to map. By default, it picks the current working directory. 
 
 ## Repository goals
