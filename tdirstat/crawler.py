@@ -153,20 +153,21 @@ class DirectoryStat(NodeStat):
         child_dirs, child_files = self._scan_result()
 
         if isinstance(child, DirectoryStat):
-            self.total_items -= child.total_items
-            self.total_size -= child.total_size
+            rm_items = -child.total_items
+            rm_size = -child.total_size
             child_dirs.remove(child)
             shutil.rmtree(child.path)
         elif isinstance(child, NodeStat):
-            self.total_items -= 1
-            self.total_size -= child.size
+            rm_items = -1
+            rm_size = -child.size
             child_files.remove(child)
             child.path.unlink()
         else:
             raise TypeError(f"The type {type(child)} is not supported!")
-
+        self.total_items += rm_items
+        self.total_size += rm_size
         if self._on_stats_change is not None:
-            self._on_stats_change(self)
+            self._on_stats_change(rm_items, rm_size, self.finished.is_set())
 
     def _get_children(self):
         try:
@@ -214,31 +215,31 @@ class DirectoryStat(NodeStat):
                 self.total_size += node.size
 
             if self._on_stats_change is not None:
-                self._on_stats_change(self)
+                self._on_stats_change(self.total_items,
+                                      self.total_size,
+                                      self.finished.is_set())
 
             return child_directories, child_files
         except Exception as e:
             logging.critical(f"Error: {e} {type(e)}")
 
-    def add_items(self, changed_dirstat: 'DirectoryStat'):
+    def add_items(self, total_items_changed, total_size_changed, finished):
         """Children nodes call this on parent methods so that parents can
         reflect the sum of items that children have found."""
 
-        self.total_items += changed_dirstat.total_items
-        self.total_size += changed_dirstat.total_size
+        self.total_items += total_items_changed
+        self.total_size += total_size_changed
 
-        finished = False
         # Check if this node is ready to be 'finished' as well
-        if (changed_dirstat.finished.is_set()
-                and all(dir.finished.is_set() for dir in self.directories)):
+        if finished and all(dir.finished.is_set() for dir in self.directories):
             self.finished.set()
-            finished = True
 
         # Optimization: Make sure there are changes that actually need to be
         # passed up the chain
         if self._on_stats_change is not None and \
-                (finished or changed_dirstat.total_items > 0):
-            self._on_stats_change(changed_dirstat)
+                (self.finished.is_set() or total_items_changed > 0):
+            self._on_stats_change(total_items_changed, total_size_changed,
+                                  self.finished.set())
 
 
 if __name__ == "__main__":
