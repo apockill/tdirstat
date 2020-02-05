@@ -156,7 +156,7 @@ class DirectoryStat(NodeStat):
             rm_items = -child.total_items
             rm_size = -child.total_size
             child_dirs.remove(child)
-            shutil.rmtree(child.path)
+            shutil.rmtree(str(child.path))
         elif isinstance(child, NodeStat):
             rm_items = -1
             rm_size = -child.size
