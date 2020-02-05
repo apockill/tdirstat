@@ -4,7 +4,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='tdirstat',
-    version='1.0.0',
+    version='1.0.2',
     description="Terminal-based directory statistics with a nice TUI and quick"
                 " actionable information",
     packages=find_namespace_packages(
@@ -17,11 +17,11 @@ setup(
             "tdirstat=tdirstat:tdirstat"
         }
     },
+    long_description=open("README.rst").read(),
     install_requires=[
         "asciimatics==1.11.0"
     ],
     url="https://github.com/apockill/tdirstat",
-    download_url="https://github.com/apockill/tdirstat/archive/v1.0.0.tar.gz",
     python_requires='>=3.6',
     extras_require={},
     classifiers=[
