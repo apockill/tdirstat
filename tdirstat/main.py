@@ -1,18 +1,20 @@
 import sys
 import os
 from argparse import ArgumentParser
+from pathlib import Path
 
 from asciimatics.scene import Scene
 from asciimatics.screen import Screen
 from asciimatics.exceptions import ResizeScreenError, StopApplication
 
-from .crawler import DirectoryStat
+from .crawler import DirectoryStat, get_mounts
 from .view import TDirStatView
 
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("root_dir", default=os.getcwd(), nargs="?",
+    parser.add_argument("root_dir", default=Path.cwd(), nargs="?",
+                        type=Path,
                         help="The directory to analyze")
     args = parser.parse_args()
 
@@ -22,8 +24,9 @@ def main():
         nonlocal dirstat
         if dirstat is None:
             dirstat = DirectoryStat(
-                path=args.root_dir,
-                on_stats_change=lambda *args, **kwargs: screen.force_update())
+                path=str(args.root_dir.absolute()),
+                on_stats_change=lambda *args, **kwargs: screen.force_update(),
+                mounts_to_ignore=get_mounts())
         screen.play(
             [Scene([TDirStatView(screen, dirstat)], duration=-1)],
 

@@ -160,7 +160,10 @@ class DirectoryStat(NodeStat):
             for entry in entries:
                 try:
                     self.total_items += 1
-                    if entry.path in self.mounts_to_ignore:
+                    if self.mounts_to_ignore is None:
+                        if os.path.ismount(entry):
+                            continue
+                    elif entry.path in self.mounts_to_ignore:
                         continue
 
                     if not entry.is_symlink():
