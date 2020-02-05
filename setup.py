@@ -20,5 +20,12 @@ setup(
     install_requires=[
         "asciimatics==1.11.0"
     ],
-    extras_require={}
+    download_url="",
+    python_requires='>=3.6',
+    extras_require={},
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
 )
