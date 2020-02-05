@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import Optional
+
 from asciimatics.event import KeyboardEvent
 from asciimatics.widgets import (
     Frame, Layout,
@@ -10,7 +13,7 @@ from asciimatics.widgets import (
 from asciimatics.screen import Screen
 from asciimatics.exceptions import StopApplication
 
-from .crawler import DirectoryStat
+from .crawler import DirectoryStat, NodeStat
 from .progress_bar import generate_progress_bar
 
 
@@ -99,9 +102,22 @@ class TDirStatView(Frame):
 
     def prompt_delete(self):
         # Just confirm whenever the user actually selects something.
-        self._scene.add_effect(
-            PopUpDialog(self._screen,
-                        "You selected: {}".format(self._list.value), ["OK"]))
+        item: Optional[NodeStat, DirectoryStat] = self._list.value
+        if item is None:
+            return
+
+        def maybe_delete_directory(should_delete):
+            if should_delete:
+                self.dirstat.delete_child(item)
+
+        popup = PopUpDialog(
+            self._screen,
+            f"Are you sure you want to delete {self._list.value.path}",
+            ["No", "Yes"],
+            theme="tlj256",
+            on_close=maybe_delete_directory)
+
+        self._scene.add_effect(popup)
 
     def details(self):
         if self._list.value is None:

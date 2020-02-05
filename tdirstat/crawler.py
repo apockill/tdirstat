@@ -1,11 +1,11 @@
 import os
 import math
 import logging
+import shutil
 from queue import Queue
 from threading import Event, Thread
-from typing import List, Union, Optional
+from typing import List, Optional, Tuple, Union
 from pathlib import Path
-from collections import namedtuple
 
 _worker = None
 _work_queue: Queue = Queue()
@@ -137,7 +137,7 @@ class DirectoryStat(NodeStat):
     def files(self) -> List['NodeStat']:
         return self._scan_result()[1]
 
-    def _scan_result(self):
+    def _scan_result(self) -> Tuple[List['DirectoryStat'], List[NodeStat]]:
         if isinstance(self._future, Queue):
             self._future = self._future.get()
         return self._future
@@ -145,6 +145,28 @@ class DirectoryStat(NodeStat):
     @property
     def total_size_pretty(self):
         return fmt_bytes(size_bytes=self.total_size)
+
+    def delete_child(self, child: Union[NodeStat, 'DirectoryStat']):
+        """Remove a direct child and update stats.
+        This WILL DELETE the directory!
+        """
+        child_dirs, child_files = self._scan_result()
+
+        if isinstance(child, DirectoryStat):
+            self.total_items -= child.total_items
+            self.total_size -= child.total_size
+            child_dirs.remove(child)
+            shutil.rmtree(child.path)
+        elif isinstance(child, NodeStat):
+            self.total_items -= 1
+            self.total_size -= child.size
+            child_files.remove(child)
+            child.path.unlink()
+        else:
+            raise TypeError(f"The type {type(child)} is not supported!")
+
+        if self._on_stats_change is not None:
+            self._on_stats_change(self)
 
     def _get_children(self):
         try:
