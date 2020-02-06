@@ -111,7 +111,10 @@ class TDirStatView(Frame):
 
         def maybe_delete_directory(should_delete):
             if should_delete:
-                self.dirstat.delete_child(item)
+                try:
+                    self.dirstat.delete_child(item)
+                except Exception as e:
+                    self.display_error(e)
 
         popup = PopUpDialog(
             self._screen,
@@ -121,6 +124,14 @@ class TDirStatView(Frame):
             on_close=maybe_delete_directory)
 
         self._scene.add_effect(popup)
+
+    def display_error(self, exception):
+        error_popup = PopUpDialog(
+            self._screen,
+            f"{type(exception).__name__}, {exception}",
+            ["Ok"],
+            theme="tlj256")
+        self._scene.add_effect(error_popup)
 
     def details(self):
         if self._list.value is None:

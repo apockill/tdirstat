@@ -158,10 +158,10 @@ class DirectoryStat(NodeStat):
             child_dirs.remove(child)
             shutil.rmtree(str(child.path))
         elif isinstance(child, NodeStat):
+            child.path.unlink()
             rm_items = -1
             rm_size = -child.size
             child_files.remove(child)
-            child.path.unlink()
         else:
             raise TypeError(f"The type {type(child)} is not supported!")
         self.total_items += rm_items
