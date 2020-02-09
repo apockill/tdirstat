@@ -25,7 +25,7 @@ def generate_progress_bar(curr, max, n_characters):
 
 def spinner(delay_seconds):
     """A generator that returns a cursor value, time based"""
-    phases = ['|', '/', '-', '\\']
+    phases = list("⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏")
     while True:
         for phase in phases:
             last_phase = time()
