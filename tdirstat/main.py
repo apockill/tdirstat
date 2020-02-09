@@ -20,7 +20,7 @@ def main():
 
     dirstat = None
 
-    def demo(screen: Screen, old_scene):
+    def tdirstat(screen: Screen, old_scene):
         nonlocal dirstat
         on_stats_change = lambda *args, **kwargs: screen.force_update()
         if dirstat is None:
@@ -39,10 +39,17 @@ def main():
     last_scene = None
     while True:
         try:
-            Screen.wrapper(demo, catch_interrupt=True, arguments=[last_scene])
+            Screen.wrapper(
+                func=tdirstat,
+                catch_interrupt=True,
+                arguments=[last_scene])
             sys.exit(0)
         except ResizeScreenError as e:
             last_scene = e.scene
+        except ValueError as e:
+            # Screen will be blank when it's too small. It's better than the
+            # application crashing, I suppose
+            pass
 
 
 if __name__ == "__main__":
