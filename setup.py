@@ -4,7 +4,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='tdirstat',
-    version='1.0.5',
+    version='1.1.0',
     description="Terminal-based directory statistics with a nice TUI and quick"
                 " actionable information",
     packages=find_namespace_packages(
