@@ -5,7 +5,8 @@ def generate_progress_bar(curr, max, n_characters):
     """Returns an ascii progress bar"""
     phases = (' ', '▏', '▎', '▍', '▌', '▋', '▊', '▉', '█')
     n_phases = len(phases)
-    progress = (curr / max) * n_characters
+
+    progress = 0 if max == 0 else (curr / max) * n_characters
     progress_bar = ""
 
     for i in range(n_characters):
