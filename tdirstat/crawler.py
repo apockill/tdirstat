@@ -35,7 +35,7 @@ def get_mounts():
 
 def fmt_bytes(size_bytes):
     """Return a nice 'total_size' string with Gb, Mb, Kb, and Byte ranges"""
-    units = ["Bytes", "kB", "MB", "GB"]
+    units = ["Bytes", "KB", "MB", "GB"]
     if size_bytes == 0:
         return f"{0} Bytes"
     for unit in units:
