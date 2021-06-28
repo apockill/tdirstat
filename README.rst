@@ -1,5 +1,6 @@
 tdirstat
 ========
+.. image:: images/image.png
 
 Terminal-based directory statistics with a nice TUI and quick actionable information
 
