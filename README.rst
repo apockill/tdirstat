@@ -6,8 +6,9 @@ Terminal-based directory statistics with a nice TUI and quick actionable informa
 
 **Overview**
 
-This project is inspired by projects such as kdirstat and qdirstat.
-Easily find where your disk space has gone, without waiting for a full-drive scan
+This project is inspired by projects such as kdirstat, windirstat, and qdirstat.
+It was born out of a need to examine directory statistics on remote servers without
+displays. Easily find where your disk space has gone, without waiting for a full-drive scan
 to complete. 
 
 Contributions welcome!
